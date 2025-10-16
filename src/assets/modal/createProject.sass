@@ -1,0 +1,75 @@
+// Дополнительные стили, специфичные для createProject.vue
+.modal__container
+  max-width: 520px
+  width: 94vw
+  padding: 24px 28px
+  border-radius: 12px
+
+.modal-title
+  margin: 0 0 18px
+  font-size: 20px
+  font-weight: 700
+  color: #2d2d2d
+  text-align: left
+
+.input__group
+  margin-bottom: 14px
+  text-align: left
+
+.input__label
+  display: block
+  margin-bottom: 8px
+  font-weight: 600
+  color: #4a4a4a
+  font-size: 0.95rem
+
+.input__control
+  width: 100%
+  padding: 10px 12px
+  border-radius: 8px
+  border: 1px solid #e6e9ef
+  background: #fafbfe
+  font-size: 0.95rem
+  color: #222
+  box-sizing: border-box
+  transition: border-color 0.15s, box-shadow 0.15s
+
+.input__control:focus
+  outline: none
+  border-color: #7a5ee6
+  box-shadow: 0 4px 18px rgba(122,94,230,0.12)
+  background: #fff
+
+.input__control--textarea
+  resize: vertical
+  min-height: 92px
+
+.modal-actions
+  display: flex
+  gap: 12px
+  justify-content: flex-end
+  margin-top: 12px
+
+.btn
+  padding: 8px 16px
+  border-radius: 8px
+  font-weight: 600
+  cursor: pointer
+  border: none
+  min-width: 110px
+
+.btn--primary
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%)
+  color: #fff
+  box-shadow: 0 6px 18px rgba(102,126,234,0.12)
+
+.btn--primary:disabled
+  opacity: 0.6
+  cursor: not-allowed
+
+.btn--ghost
+  background: #f3f4f6
+  color: #333
+  border: 1px solid #e6e9ef
+
+// Плавная анимация появления — согласована с modalWindow.sass .fade-modal*

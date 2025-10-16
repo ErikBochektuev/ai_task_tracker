@@ -1,0 +1,32 @@
+.taskCard 
+    position: relative
+    width: 100%
+    height: auto
+    padding: 1rem 2rem
+    background-color: aliceblue
+    box-sizing: border-box
+    margin-bottom: 16px
+    border-radius: 16px
+    &__color
+        position: absolute
+        top: 0
+        left: 0
+        height: 100%
+        width: 10px
+        border-radius: 16px 0 0 16px 
+    &__title
+        font-weight: normal
+    &__title::first-letter
+        text-transform: uppercase
+    
+    &__description
+        height: 0
+        overflow: hidden
+        transition: height 0.3s ease-in-out
+        interpolate-size: allow-keywords
+    .active
+        height: auto
+
+.taskCard:hover
+    cursor: pointer
+

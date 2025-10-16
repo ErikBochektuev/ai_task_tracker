@@ -1,0 +1,24 @@
+@import './base.css';
+
+@import './pages/categoriesPage.sass';
+@import './modal/modalWindow.sass';
+@import './modal/addProjectToCategory.sass';
+@import './modal/addCategory.sass';
+@import './modal/categorySettings.sass';
+@import './modal/projectSettings.sass';
+@import './modal/addCategory.sass';
+
+@import './components/taskCard.sass';
+@import './components/projectCard.sass';
+@import './components/header.sass';
+
+
+@import './components/buttonComponent.sass';
+
+body{
+    margin: 0;
+    -webkit-user-select: none; 
+    -moz-user-select: none;   
+    -ms-user-select: none;    
+    user-select: none; 
+}
