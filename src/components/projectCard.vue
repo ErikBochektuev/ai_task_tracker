@@ -56,7 +56,8 @@ export default {
         console.log(icon, this.project.icon_id)
         if (icon === this.project.icon_id){
             try {
-                this.iconFile = loadFromCache(`project_icon_${this.project.id}`)
+                const iconNotFile = loadFromCache(`project_icon_${this.project.id}`)
+                this.iconFile = useIconStore().blobIcon(iconNotFile)
                 console.log('Иконка взята из кэша')
             } catch (error) {
                 localStorage.removeItem(`project_icon_id_${this.project.id}`)

@@ -19,19 +19,30 @@ export const useIconStore = defineStore('icon', () => {
     const getIcon = async (project_id, icon_id) => {
         try {
             const iconResponse = await iconApi.getProjectIcon(project_id)
-            const blob = new Blob([iconResponse.data], { type: 'image/jpeg' })
-            const iconFile = URL.createObjectURL(blob)
-            saveToCache(`project_icon_${project_id}`, iconFile)
+            saveToCache(`project_icon_${project_id}`, iconResponse)
             saveToCache(`project_icon_id_${project_id}`, icon_id)
-            return { success: true, data: iconFile }
+
+            const iconFile = await blobIcon(iconResponse.data)
+            return { success: true, data: iconFile.data }
         } catch (error) {
             const errorMessage = error
             return { success: false, error: errorMessage}
         }
     }
 
+    const blobIcon = async (iconResponse) => {
+        try{
+            const blob = new Blob([iconResponse], { type: 'image/jpeg' })
+            const iconFile = URL.createObjectURL(blob)
+            return { success: true, data: iconFile }
+        } catch (error) {
+            return { success: false, error: error}
+        }
+    } 
+
     return {
         upload,
-        getIcon
+        getIcon,
+        blobIcon
     }
 })
