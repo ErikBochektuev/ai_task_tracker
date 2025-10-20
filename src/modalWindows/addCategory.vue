@@ -6,11 +6,6 @@
           <h1>Создание категории</h1>
         </div>
         
-        <div v-if="showNotification" class="notification" :class="notificationType">
-          {{ notificationMessage }}
-          <button @click="hideNotification" class="close-btn">×</button>
-        </div>
-        
         <div class="input__group">
           <label for="name" class="input__group--label">Название категории</label>
           <input
@@ -82,10 +77,7 @@ export default {
         name: '',
         color: ''
       },
-      loading: false,
-      showNotification: false,
-      notificationMessage: '',
-      notificationType: 'error'
+      loading: false
     }
   },
   
@@ -102,7 +94,7 @@ export default {
         case 'color':
           this.errors.color = this.form.color ? 
             (this.form.color.length > 10 ? 'Название цвета не должно превышать 10 символов' : '') : 
-            'Описание проекта обязательно'
+            ''
           break
       }
     },
@@ -118,33 +110,15 @@ export default {
       return !this.errors.name && !this.errors.color
     },
     
-    showNotificationMessage(message, type = 'error') {
-      this.notificationMessage = message
-      this.notificationType = type
-      this.showNotification = true
-      
-      if (type === 'success') {
-        setTimeout(() => {
-          this.hideNotification()
-        }, 3000)
-      }
-    },
-    
-    hideNotification() {
-      this.showNotification = false
-      this.notificationMessage = ''
-    },
-    
     async handleSubmit() {
       if (!this.validateForm()) {
-        this.showNotificationMessage('Пожалуйста, исправьте ошибки в форме', 'error')
+        this.$emit('error', 'Пожалуйста, исправьте ошибки в форме')
         return
       }
       
-      this.loading = true
-      
       try {
         const authStore = useAuthStore()
+        this.loading = true
         const result = await useCategoryStore().createCategory({
             name: this.form.name,
             color: this.form.color
@@ -153,18 +127,15 @@ export default {
         }})
         
         if (result.success) {
-          this.showNotificationMessage('Категория успешно создана!', 'success')
           setTimeout(() => {
-           this.$emit('create')
+           this.$emit('create', 'created')
           }, 1000)
         } else {
           this.showNotificationMessage(result, 'error')
+          this.$emit('error', result)
         }
       } catch (error) {
-        this.showNotificationMessage('Произошла ошибка при создании проекта', 'error')
-        console.error('Create project error:', error)
-      } finally {
-        this.loading = false
+        this.$emit('error', 'Произошла ошибка при создании проекта')
       }
     },
     

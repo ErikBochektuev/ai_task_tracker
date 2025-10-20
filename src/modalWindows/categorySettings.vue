@@ -112,7 +112,8 @@ export default {
           }
         })
         if (response.success){
-          this.$emit('update')
+          
+          this.$emit('update', 'deleted')
         } else {
           console.log(response)
         }

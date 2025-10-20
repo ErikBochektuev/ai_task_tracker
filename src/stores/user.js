@@ -18,7 +18,8 @@ export const useUserStore = defineStore('user', () => {
             const response = await userApi.updateProfile(profileData)
             return { success: true, data: response.data }
         } catch (error) {
-            const errorMessage = error.response.data.details
+            const errorMessage = error.response.data.detail
+            console.log('errorMessage', errorMessage)
             return { success: false, error: errorMessage }
         }
     }

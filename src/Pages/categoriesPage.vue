@@ -6,6 +6,10 @@
         <h1>Категории проектов</h1>
         <buttonComponent @click="addCategoryModal" :text="'+ Создать категорию'" class="positive"/>
       </div>
+      <div v-if="showNotification" class="notification" :class="notificationType">
+        {{ notificationMessage }}
+        <button @click="showNotification = false" class="close-btn">×</button>
+      </div>
       <div class="categories-list">
         <div
           v-for="category in categories"
@@ -67,6 +71,7 @@
       @close="addToCategory = false"
       :data="projects"
       :category="selectedCategory"
+      @error="catchError"
       @add="handleAddProject"
       @update="getCategories"
     />
@@ -74,6 +79,7 @@
     <projectSettings
       v-if="showProjectModal"
       :data="currentProject"
+      @error="catchError"
       @close="closeProjectModal"
       @update="getCategories"
     />
@@ -81,6 +87,7 @@
     <categorySettings
       v-if="showCategoryModal"
       :data="currentCategory"
+      @error="catchError"
       @close="closeCategoryModal"
       @save="saveCategory"
       @update="getCategories"
@@ -88,12 +95,14 @@
 
     <addCategory 
       v-if="addCategory"
+      @error="catchError"
       @close="addCategoryModal"
       @create="getCategories"
     />
 
     <createProject 
       v-if="createProject"
+      @error="catchError"
       @close="createProjectModal"
       @update="getCategories"
     />
@@ -121,6 +130,9 @@ export default {
       categories: [],
       projects: [],
       openCategoryId: null,
+      showNotification: false,
+      notificationMessage: '',
+      notificationType: '',
       showProjectModal: false,
       showCategoryModal: false,
       addCategory: false,
@@ -144,6 +156,7 @@ export default {
       this.currentCategory.color = data.color
       this.showCategoryModal = false
       this.currentCategory = null
+      this.showNotificationMessage('Категория успешно сохранена', 'success')
     },
     toggleCategory(id) {
       this.openCategoryId = this.openCategoryId === id ? null : id
@@ -170,12 +183,28 @@ export default {
       this.addToCategory = true
     },
 
+    catchError(value){
+      this.showNotificationMessage(value, 'error')
+    },
+
     toProject(project){
       saveToCache(`project_${project.id}_info`, project)
       this.$router.push({
         name: 'projectsPage',
         params: {id: project.id}
       })
+    },
+
+    showNotificationMessage(message, type = 'error') {
+      this.notificationMessage = message
+      this.notificationType = type
+      this.showNotification = true
+      
+      if (type === 'success') {
+        setTimeout(() => {
+          this.showNotification = false
+        }, 3000)
+      }
     },
 
     async handleAddProject(projectId) {
@@ -187,6 +216,7 @@ export default {
           }
         })
         if (response.success) {
+          this.showNotificationMessage('Проект успешно добавлен в категорию', 'success')
           await this.getCategories()
         }
       } catch (error) {
@@ -196,7 +226,7 @@ export default {
         this.selectedCategory = null
       }
     },
-    async getCategories() {
+    async getCategories(value) {
       try {
         const response = await useCategoryStore().getCategories({
           headers: {
@@ -216,6 +246,11 @@ export default {
         this.addCategory = false
         this.createProject = false
         this.showCategoryModal = false
+        if (value === 'deleted') {
+          this.showNotificationMessage('Удаление прошло успешно!', 'success')
+        } else if (value === 'created') {
+          this.showNotificationMessage('Создание прошло успешно!', 'success')
+        }
       }
     }
   },

@@ -192,13 +192,11 @@ export default {
       this.showPassword = !this.showPassword
     },
     
-    // уведомление
     showNotificationMessage(message, type = 'error') {
       this.notificationMessage = message
       this.notificationType = type
       this.showNotification = true
       
-      // Автоскрытие для успешныъ сообщений
       if (type === 'success') {
         setTimeout(() => {
           this.hideNotification()
@@ -241,31 +239,8 @@ export default {
         this.loading = false
       }
     },
-    
-    // // Обработка социальной авторизации
-    // handleSocialAuth(provider) {
-    //   this.loading = true
-      
-    //   // Перенаправление на OAuth провайдера
-    //   const redirectUrl = `${process.env.VUE_APP_API_URL}/auth/${provider}`
-    //   window.location.href = redirectUrl
-    // },
-    
-    // Переход к регистрации
     goToRegister() {
       this.$router.push('/register')
-    }
-  },
-  
-  watch: {
-    // Наблюдаем за изменениями в хранилище аутентификации
-    '$store.state.auth.isAuthenticated': {
-      handler(newValue) {
-        if (newValue) {
-          this.$router.push('/dashboard')
-        }
-      },
-      immediate: true
     }
   }
 }

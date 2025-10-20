@@ -2,8 +2,6 @@
   <div class="modal-wrapper">
     <transition name="fade-modal">
       <div class="modal__container modal-content">
-          
-          <Loader v-if="loading"></Loader>
           <div class="logo-container">
             <h1 class="modal__container--title">Участники проекта</h1>
             <button type="button" class="edit-btn" v-if="currentRole === 'OWNER' || currentRole === 'ADMINISTRATOR'" @click="edit = !edit" title="Редактировать">
@@ -176,11 +174,10 @@ import { useProjectsStore } from '@/stores/projects'
 import { useAuthStore } from '@/stores/auth'
 import { useIconStore } from '@/stores/icon';
 import buttonComponent from '@/components/button.vue';
-import Loader from '@/components/Loader.vue';
 
 export default {
   name: 'ProjectSettings',
-  components: { buttonComponent, Loader },
+  components: { buttonComponent },
   data() {
     return {
       currentRole: '',
@@ -359,10 +356,9 @@ export default {
             })
             this.showDeleteConfirm = false
             if (response.success) {
-                this.showNotificationMessage('Удаление прошло успешно!', 'success')
-                setTimeout(() => {
-                    this.$emit('update')
-                }, 1000)
+                
+                this.$emit('update', 'deleted')
+
             } else {
                 this.showNotificationMessage(response.error, 'error')
             }

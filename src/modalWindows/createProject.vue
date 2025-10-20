@@ -56,11 +56,7 @@ export default {
       errors: {
         name: '',
         description: ''
-      },
-      loading: false,
-      showNotification: false,
-      notificationMessage: '',
-      notificationType: 'error'
+      }
     }
   },
   
@@ -77,7 +73,7 @@ export default {
         case 'description':
           this.errors.description = this.form.description ? 
             (this.form.description.length > 500 ? 'Описание не должно превышать 500 символов' : '') : 
-            'Описание проекта обязательно'
+            ''
           break
       }
     },
@@ -92,31 +88,11 @@ export default {
       
       return !this.errors.name && !this.errors.description
     },
-    
-    showNotificationMessage(message, type = 'error') {
-      this.notificationMessage = message
-      this.notificationType = type
-      this.showNotification = true
-      
-      if (type === 'success') {
-        setTimeout(() => {
-          this.hideNotification()
-        }, 3000)
-      }
-    },
-    
-    hideNotification() {
-      this.showNotification = false
-      this.notificationMessage = ''
-    },
-    
     async handleSubmit() {
       if (!this.validateForm()) {
-        this.showNotificationMessage('Пожалуйста, исправьте ошибки в форме', 'error')
+        this.$emit('error', 'Пожалуйста, исправьте ошибки в форме')
         return
       }
-
-      this.loading = true
       
       try {
         const authStore = useAuthStore()
@@ -130,16 +106,15 @@ export default {
         }})
         
         if (result.success) {
-          this.showNotificationMessage('Проект успешно создан!', 'success')
           
           setTimeout(() => {
-           this.$emit('update')
+           this.$emit('update', 'created')
           }, 1000)
         } else {
-          this.showNotificationMessage(result, 'error')
+          this.$emit('error', result.error.data.detail[0].msg)
         }
       } catch (error) {
-        this.showNotificationMessage('Произошла ошибка при создании проекта', 'error')
+        this.$emit('error', 'Произошла ошибка при создании проекта')
         console.error('Create project error:', error)
       } finally {
         this.loading = false
@@ -147,17 +122,6 @@ export default {
     },
     
     
-  },
-  
-  watch: {
-    '$store.state.auth.isAuthenticated': {
-      handler(newValue) {
-        if (!newValue) {
-          this.$router.push('/login')
-        }
-      },
-      immediate: true
-    }
   }
 }
 </script>

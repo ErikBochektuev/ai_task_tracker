@@ -1,7 +1,7 @@
 <template>
   <div class="auth-container">
-    <Loader v-if="loading" text="Загрузка профиля..." />
-    <div v-else class="auth-form profile-form">
+    <!-- <Loader v-if="loading" text="Загрузка профиля..." /> -->
+    <div class="auth-form profile-form">
       <div class="profile-header">
         <div class="avatar-section">
           <div class="avatar-container">
@@ -15,9 +15,9 @@
           </div>
         </div>
         <div class="profile-info">
-          <h1 class="username">{{ user.username }}</h1>
+          <h1 class="nickname">{{ user.nickname === null ? 'Имя пользователя не задано' : user.nickname }}</h1>
           <div class="user-meta">
-            <span class="user-id">ID: {{ user.id }}</span>
+            <span class="user-id">{{ user.username }}</span>
           </div>
           <h2 class="user-email">{{ user.email }}</h2>
         </div>
@@ -28,28 +28,10 @@
       </div>
       <div class="profile-section">
         <h3 class="section-title">О себе</h3>
-        <div v-if="!editingBio" class="bio-content">
+        <div class="bio-content">
           <p class="bio-text" :class="{ 'bio-empty': !user.bio }">
             {{ user.bio || 'Пользователь пока не добавил информацию о себе' }}
           </p>
-        </div>
-        <div v-else class="bio-editor">
-          <textarea
-            v-model="editBioText"
-            class="bio-textarea"
-            placeholder="Расскажите о себе..."
-            rows="4"
-            maxlength="500"
-          ></textarea>
-          <div class="bio-actions">
-            <span class="char-counter">{{ editBioText.length }}/500</span>
-            <div class="action-buttons">
-              <button @click="cancelEditingBio" class="cancel-button">Отмена</button>
-              <button @click="saveBio" class="save-button" :disabled="!editBioText.trim() || saving">
-                {{ saving ? 'Сохранение...' : 'Сохранить' }}
-              </button>
-            </div>
-          </div>
         </div>
       </div>
       <div class="profile-section">
@@ -97,9 +79,9 @@
       <div class="modal-content avatar-modal">
         <Loader v-if="loadingModal" text="Загрузка..." />
         <h3>Редактирование профиля</h3>
-        <div class="edit-fields">
-          <input type="text" class="modal-input" placeholder="username" v-model="newUsername">
-          <input type="text" class="modal-input" placeholder="description" v-model="newDescription">
+        <div class="input__group">
+          <input type="text" class="input__group--input" placeholder="nickname" v-model="new_nickname">
+          <input type="text" class="input__group--input" placeholder="description" v-model="new_description">
         </div>
         <div class="modal-actions">
           <button @click="showEditModal = false" class="cancel-button">Отмена</button>
@@ -136,8 +118,9 @@ export default {
       notificationType: 'error',
       avatarColor: '#2b2b2b',
 
-      newUsername: '',
-      newDescription: ''
+      new_username: '',
+      new_nickname: '',
+      new_description: ''
     }
   },
   computed: {
@@ -157,7 +140,9 @@ export default {
         const response = await useUserStore().getMe()
         if (response.success) {
           this.user = response.data
-          console.log('user',this.user)
+          this.new_username = this.user.username
+          this.new_nickname = this.user.nickname
+          this.new_description = this.user.bio
           await this.getIcon(this.user.id)
         } else {
           this.showNotificationMessage(response.error, 'error')
@@ -169,15 +154,15 @@ export default {
       }
     },
     async updateProfile(){
-      this.loadingModal = true
-      if (this.newUsername === '' && this.newDescription === ''){
+      // this.loadingModal = true
+      if (this.new_nickname === this.user.nickname && this.new_description === this.user.bio){
         this.showNotificationMessage('Измените хотя бы одно поле', 'error')
         return 
       }
       try {
         const response = await useUserStore().updateProfile({
-          username: this.newUsername === '' ? null : this.newUsername,
-          bio: this.newDescription === '' ? null : this.newDescription
+          nickname: this.new_nickname === '' ? null : this.new_nickname,
+          bio: this.new_description === '' ? null : this.new_description
         },{
           headers: {
             Authorization: `${useAuthStore().token}`
@@ -185,11 +170,15 @@ export default {
         })
         if (response.success) {
           this.showNotificationMessage('Обновление информации прошло успешно','success')
-          this.newUsername !== '' ? this.user.username = this.newUsername : ''
-          this.newDescription !== '' ? this.user.bio = this.newDescription : ''
+          await this.loadUserData()
+          this.showEditModal = false
+        } else {
+          this.showNotificationMessage(response.error,'error')
         }
       } catch (error) {
-        this.showNotificationMessage(error,'error')
+        console.log('error')
+        console.log(error)
+        this.showNotificationMessage(error.response,'error')
       } finally {
         this.loadingModal = false 
       }
@@ -210,7 +199,7 @@ export default {
       }
       
     },
-    handleFileUpload() {
+    handleFileUpload(event) {
       this.file = event.target.files[0]
     },
     async uploadIcon() {
@@ -245,19 +234,6 @@ export default {
       this.editingBio = false
       this.editBioText = ''
     },
-    async saveBio() {
-      this.saving = true
-      try {
-        await new Promise(resolve => setTimeout(resolve, 1000))
-        this.user.bio = this.editBioText
-        this.editingBio = false
-        this.showNotificationMessage('Описание успешно обновлено', 'success')
-      } catch (error) {
-        this.showNotificationMessage('Ошибка сохранения', 'error')
-      } finally {
-        this.saving = false
-      }
-    },
     editAvatar() {
       this.showAvatarModal = true
     },
@@ -285,6 +261,11 @@ export default {
     hideNotification() {
       this.showNotification = false
       this.notificationMessage = ''
+    }
+  },
+  watch: {
+    showNotification(){
+      console.log('showNotification changed', this.showNotification)
     }
   }
 }
@@ -589,11 +570,11 @@ export default {
 .modal-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(40, 40, 70, 0.35);
+  background: rgba(0, 0, 0, 0.5);
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 2000;
+  z-index: 1000;
   overflow: auto;
   animation: fadeInModal 0.3s;
 }
@@ -721,83 +702,4 @@ export default {
   color: #5a67d8;
 }
 
-/* Адаптивность */
-@media (max-width: 600px) {
-  .modal-content {
-    padding: 1.2rem 0.5rem;
-    max-width: 98vw;
-  }
-  .modal-actions {
-    flex-direction: column;
-    gap: 0.7rem;
-  }
-}
-
-.edit-fields {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-  margin-bottom: 1.2rem;
-}
-
-.modal-input {
-  width: 100%;
-  padding: 0.85rem 1rem;
-  border: 2px solid #e1e5e9;
-  border-radius: 10px;
-  font-size: 1rem;
-  background: #f8fafc;
-  transition: border-color 0.2s;
-  font-family: inherit;
-  box-sizing: border-box;
-}
-
-.modal-input:focus {
-  border-color: #764ba2;
-  background: #eef2ff;
-  outline: none;
-}
-
-.notification {
-  margin: 1rem 0 1.5rem 0;
-  padding: 1rem 1.5rem;
-  border-radius: 8px;
-  font-size: 1rem;
-  font-weight: 500;
-  box-shadow: 0 2px 8px rgba(102, 126, 234, 0.08);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
-  background: #f3f4f6;
-  color: #333;
-  border: 1.5px solid #e1e5e9;
-  position: relative;
-}
-
-.notification.success {
-  background: #e0fbe7;
-  color: #059669;
-  border-color: #bbf7d0;
-}
-
-.notification.error {
-  background: #fee2e2;
-  color: #dc2626;
-  border-color: #fecaca;
-}
-
-.close-btn {
-  background: none;
-  border: none;
-  color: #888;
-  font-size: 1.3rem;
-  cursor: pointer;
-  margin-left: 1rem;
-  transition: color 0.2s;
-}
-
-.close-btn:hover {
-  color: #333;
-}
 </style>
