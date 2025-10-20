@@ -25,18 +25,17 @@ export default {
         }
     },
     methods: {
-        async getIcon() { 
+        async getIcon() {
             try {
                 const response = await useIconStore().getIcon(this.project.id, this.project.icon_id)
-
                 if (response.success) {
                     this.iconFile = response.data
                     console.log('Иконка получена', this.iconFile)
                 } else {
-                    console.log('Ошибка', response.error, response)
+                    console.warn('Ошибка получения иконки', response.error)
                 }
             } catch (error) {
-                console.log(error)
+                console.error('getIcon error', error)
             }
         }
     },
@@ -51,27 +50,33 @@ export default {
         }
     },
     async mounted(){
-        const icon = loadFromCache(`project_icon_id_${this.project.id}`)
-        console.log(this.project)
-        console.log(icon, this.project.icon_id)
-        if (icon === this.project.icon_id){
-            try {
-                const iconNotFile = loadFromCache(`project_icon_${this.project.id}`)
-                this.iconFile = useIconStore().blobIcon(iconNotFile)
-                console.log('Иконка взята из кэша')
-            } catch (error) {
-                localStorage.removeItem(`project_icon_id_${this.project.id}`)
-                localStorage.removeItem(`project_icon_${this.project.id}`)
-                await this.getIcon()
-            }
-            
-        } else {
-            localStorage.removeItem(`project_icon_id_${this.project.id}`)
-            localStorage.removeItem(`project_icon_${this.project.id}`)
-            await this.getIcon()
-            console.log('Иконка обновлена')
+        if (this.project.icon_id === null) {
+            console.log('Иконка не установлена для проекта', this.project.id)
+            return
         }
-        
+
+        try {
+            const cachedId = loadFromCache(`project_icon_id_${this.project.id}`)
+            const cachedData = loadFromCache(`project_icon_${this.project.id}`)
+
+            if (cachedData && String(cachedId) === String(this.project.icon_id)) {
+                if (typeof cachedData === 'string' && cachedData.startsWith('data:')) {
+                    this.iconFile = cachedData
+                    console.log('Иконка взята из кэша (data URL)')
+                    return
+                } else {
+                    localStorage.removeItem(`project_icon_${this.project.id}`)
+                    localStorage.removeItem(`project_icon_id_${this.project.id}`)
+                    await this.getIcon()
+                    return
+                }
+            }
+            await this.getIcon()
+            console.log('Иконка обновлена с сервера')
+        } catch (err) {
+            console.error('projectCard mounted error', err)
+            await this.getIcon()
+        }
     }
 }
 </script>
