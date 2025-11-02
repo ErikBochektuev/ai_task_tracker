@@ -10,7 +10,7 @@
               </svg>
             </button>
           </div>
-
+          
           <div v-if="showNotification" class="notification" :class="notificationType">
             {{ notificationMessage }}
             <button @click="hideNotification" class="close-btn">×</button>
@@ -450,8 +450,8 @@ export default {
             const response = await useProjectsStore().addProjectMember(
                 this.data.id,
                 {
-                    inv_email: this.newUserEmail,
-                    inv_role: this.new_user_role 
+                    email: this.newUserEmail,
+                    role: this.new_user_role 
                 },
                 {
                     headers: {

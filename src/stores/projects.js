@@ -14,7 +14,7 @@ export const useProjectsStore = defineStore('project', () => {
     isLoading.value = true
     try {
       const response = await projectApi.getProjects()
-      saveToCache('projects', response.data)
+      saveToCache('projects', response.data.items)
       return { success: true, data: response.data }
     } catch (error) {
       const cachedData = loadFromCache('projects')

@@ -11,6 +11,7 @@ const NotFound = () => import('@/Pages/NotFound.vue')
 const invitePage = () => import('@/Pages/invitePage.vue')
 const resetPassword = () => import('@/Pages/resetPasswordPage.vue')
 const categoriesPage = () => import('@/Pages/categoriesPage.vue')
+const calendarPage = () => import('@/Pages/calendarPage.vue')
 
 
 const routes = [
@@ -74,6 +75,15 @@ const routes = [
     }
   },
   {
+    path: '/calendar',
+    name: 'calendar',
+    component: calendarPage,
+    meta: {
+      requiresAuth: true,
+      title: 'Календарь'
+    }
+  },
+  {
     path: '/project/:id',
     name: 'projectsPage',
     component: ProjectsPage,
@@ -83,6 +93,7 @@ const routes = [
       title: 'Проекты'
     }
   },
+
   {
     path: '/profile',
     name: 'Profile',

@@ -14,5 +14,7 @@ export const taskApi = {
     getTasks: (projectID) => api.get(`/projects/${projectID}/tasks`),
     createTask: (projectID, taskData) => api.post(`/projects/${projectID}/tasks`, taskData),
     updateTask: (projectID, taskID, taskData) => api.patch(`/projects/${projectID}/tasks/${taskID}`, taskData),
-    deleteTask: (projectID, taskID) => api.delete(`/projects/${projectID}/tasks/${taskID}`)
+    deleteTask: (projectID, taskID) => api.delete(`/projects/${projectID}/tasks/${taskID}`),
+
+    byDate: (date, days) => api.get(`/projects/tasks?date=${encodeURIComponent(date)}&days_after=${days}`)
 }

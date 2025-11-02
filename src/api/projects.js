@@ -20,8 +20,8 @@ export const projectApi = {
   getProjectMembers: (projectID) => api.get(`/projects${projectID}/members`, { withCredentials: true }),
   addProjectMember: (projectID, userData) => 
     api.post(
-      `/projects${projectID}/members/invite?email=${encodeURIComponent(userData.inv_email)}&role=${encodeURIComponent(userData.inv_role)}`,
-      null,
+      `/projects${projectID}/members/invite`,
+      userData,
       { withCredentials: true }
     ),
   acceptInvite: (token) => api.post(`/projects/members/confirm?invite_token=${encodeURIComponent(token)}`),

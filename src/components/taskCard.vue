@@ -7,7 +7,7 @@
             <br>
             Выполнить до:
             <br>
-            {{ task.end }}
+            {{ time.date }} {{ time.time }}
         </div>
     </div>
 </template>
@@ -22,6 +22,10 @@ export default {
     },
     props: {
         task: {
+            type: Object,
+            required: true
+        },
+        time: {
             type: Object,
             required: true
         }

@@ -1,0 +1,40 @@
+.calendar
+    display: flex
+    position: relative
+
+.container__time
+    display: flex
+    flex-direction: column
+    margin-top: 50px
+    &--block 
+        height: 100px
+        width: 50px
+        text-align: center
+        border-left: 1px solid #d2d2d2
+        &--line 
+            position: absolute
+            height: 1px
+            background: #d2d2d2
+            width: 100%
+.container__time:nth-child(1)
+    border-top: 1px solid #d2d2d2
+.container__days
+    width: 100%
+    border-right: 1px solid #d2d2d2
+    &--day
+        display: flex
+        align-items: center
+        justify-content: center
+        height: 50px
+        border-bottom: 1px solid #d2d2d2
+        text-align: center
+    &--task
+        background-color: green
+
+.arrow
+    position: absolute
+    top: 13px
+.left
+    left: -34px
+.right  
+    right: -34px        

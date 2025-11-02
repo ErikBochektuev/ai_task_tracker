@@ -7,7 +7,7 @@
           <h1 class="project-title">{{ project.name }}</h1>
           <h2 class="project-description"> {{ project.description }} </h2>
           <div class="project-tasks" v-if="tasks.length > 0">
-            <taskCard :task="task" v-for="task in tasks" :key="task.id"></taskCard>
+            <taskCard :task="task" :time="parseDate(task.end)" v-for="task in tasks" :key="task.id"></taskCard>
           </div>
           <div class="project-tasks active" v-else>
             В проекте нет ни одной задачи
@@ -16,7 +16,7 @@
       </aside>
       <main class="main-content">
         <div class="main-header">
-          <h1>Добро пожаловать!</h1>
+          <h1>Добро пожаловать</h1>
           <button class="create-button" @click="modalWindow('create')">+ Создать проект</button>
         </div>
         <div class="calendar-section">
@@ -202,6 +202,27 @@ export default {
       }
       return `${endH.toString().padStart(2, '0')}:${endM.toString().padStart(2, '0')}`
     },
+    parseDate(dateString) {
+      const deadline = new Date(dateString);
+      
+      
+      
+      return {
+        date: deadline.toLocaleDateString('ru-RU', { 
+          day: 'numeric', 
+          month: 'long', 
+          year: 'numeric' 
+        }),
+        time: deadline.toLocaleTimeString('ru-RU', { 
+          hour: '2-digit', 
+          minute: '2-digit' 
+        }),
+        weekday: deadline.toLocaleDateString('ru-RU', { 
+          weekday: 'long' 
+        })
+      };
+    },
+    
     async getTasks(){
       try {
         const response = await useTaskStore().getTasks(this.id, {
@@ -213,7 +234,9 @@ export default {
           
           this.loading = false
           this.tasks = response.data.items
-          console.log('tasks', this.tasks)
+          console.log('tasks', this.tasks, typeof(this.tasks))
+          console.log('Время задачи', this.tasks[0].end)
+          console.log('Время задачи', this.parseDate(this.tasks[0].end))
         } else {
           console.log(response.error)
           this.$router.push('/categories')

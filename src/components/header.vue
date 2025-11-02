@@ -5,7 +5,11 @@
         <span>AI TODO</span>
       </router-link>
       <div class="header__nav--links">
-
+        <router-link to="/calendar" v-if="isAuthenticated" class="header__nav--links--btn">
+          <buttonComponent 
+          class="positive"
+          :text="'Календарь'"/>
+        </router-link>
         <router-link v-if="!isAuthenticated" to="/login" class="header__nav--links--btn">
           <buttonComponent 
           class="close"

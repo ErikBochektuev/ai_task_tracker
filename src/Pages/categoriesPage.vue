@@ -1,7 +1,7 @@
 <template>
-  <div class="categories-layout">
+  <div class="layout">
     <Loader v-if="loading" />
-    <div v-else class="categories-container">
+    <div v-else class="container">
       <div class="categories-header">
         <h1>Категории проектов</h1>
         <buttonComponent @click="addCategoryModal" :text="'+ Создать категорию'" class="positive"/>
@@ -121,6 +121,7 @@ import buttonComponent from '@/components/button.vue'
 import { saveToCache } from '@/cache/cache'
 import { useCategoryStore } from '@/stores/category'
 import { useAuthStore } from '@/stores/auth'
+import { useProjectsStore } from '@/stores/projects'
 
 export default {
   name: 'CategoriesPage',
@@ -252,10 +253,23 @@ export default {
           this.showNotificationMessage('Создание прошло успешно!', 'success')
         }
       }
+    },
+    async getProjects(){
+      try {
+        const response = await useProjectsStore().getProjects()
+        if (response.success) {
+          console.log('Получение проектов прошло успешно')
+        } else {
+          console.log(response.error)
+        }
+      } catch (error) {
+        console.log(error)
+      }
     }
   },
   async mounted() {
     await this.getCategories()
+    this.getProjects()
   }
 }
 </script>

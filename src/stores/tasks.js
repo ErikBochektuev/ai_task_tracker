@@ -26,7 +26,7 @@ export const useTaskStore = defineStore('task', () => {
             const response = await taskApi.createTask(projectID, taskData)
             return { success: true, data: response.data }
         } catch (error) {
-            const errorMessage = error.response.data.details 
+            const errorMessage = error.response.data.detail 
             return { success: false, error: errorMessage }
         }
     }
@@ -51,10 +51,21 @@ export const useTaskStore = defineStore('task', () => {
         }
     }
 
+    const byDate = async (date, days) => {
+        try {
+            const response = await taskApi.byDate(date,days)
+            return { success: true, data: response.data }
+        } catch (error) {
+            const errorMessage = error.response.data.details 
+            return { success: false, error: errorMessage }
+        }
+    }
+
     return {
         getTasks,
         createTask,
         updateTask,
-        deleteTask
+        deleteTask,
+        byDate
     }
 })

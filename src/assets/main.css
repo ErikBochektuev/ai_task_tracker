@@ -1,12 +1,15 @@
 @import './base.css';
 
 @import './pages/categoriesPage.sass';
+@import './pages/calendarPage.sass'; 
+
 @import './modal/modalWindow.sass';
 @import './modal/addProjectToCategory.sass';
 @import './modal/addCategory.sass';
 @import './modal/categorySettings.sass';
 @import './modal/projectSettings.sass';
 @import './modal/addCategory.sass';
+@import './modal/createTask.sass';
 
 @import './components/taskCard.sass';
 @import './components/projectCard.sass';
