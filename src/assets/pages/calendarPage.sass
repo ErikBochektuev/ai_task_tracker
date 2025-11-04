@@ -20,8 +20,10 @@
     border-top: 1px solid #d2d2d2
 .container__days
     width: 100%
+    position: relative
     border-right: 1px solid #d2d2d2
     &--day
+        
         display: flex
         align-items: center
         justify-content: center
@@ -30,11 +32,33 @@
         text-align: center
     &--task
         background-color: green
+        &--item 
+            position: absolute
+            background: #d2d2d2
+            border-radius: 8px
+            border: 1px solid #b2b2b2
+            transition: transform 0.2s ease-in-out
+            box-shadow: 2px 2px 5px rgba(0,0,0,0.1)
+            
+            &--line 
+                position: absolute
+                width: 4px
+                height: 100%
+                margin: 1px 0 1px 0
+                border-radius: 8px 0 0 8px
+            &--descr
+                margin: 5px 0 5px 10px
+                word-wrap: break-word
+        &--item:hover 
+            transform: scale(1.05)
+            
+
 
 .arrow
     position: absolute
     top: 13px
+    cursor: pointer
 .left
     left: -34px
 .right  
-    right: -34px        
+    right: -34px     

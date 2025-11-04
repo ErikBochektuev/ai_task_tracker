@@ -159,25 +159,8 @@ export default {
         },
         convertDate() {
             try {
-                // Создаем объект Date из строк date и time
-                const dateTimeString = `${this.deadline.date}T${this.deadline.time}`;
-                const dateObj = new Date(dateTimeString);
-                
-                // Проверяем валидность даты
-                if (isNaN(dateObj.getTime())) {
-                throw new Error('Некорректная дата или время');
-                }
-                
-                // Получаем ISO строку и преобразуем к нужному формату
-                const isoString = dateObj.toISOString();
-                
-                // Преобразуем в формат с микросекундами (6 цифр)
-                // ISO: "2025-10-24T12:20:06.626Z" → "2025-10-24T15:20:06.626000"
-                const formattedDateTime = isoString
-                .replace('Z', '000000') // Заменяем Z на нули для микросекунд
-                .slice(0, -3); // Обрезаем до 6 цифр после точки
-                
-                this.form.end = formattedDateTime;;
+                const dateTimeString = `${this.deadline.date}T${this.deadline.time}:00`;
+                this.form.end = dateTimeString;
             } catch (error) {
                 console.log(error)
             }
@@ -185,6 +168,8 @@ export default {
         async createTask(){
             this.convertDate()
             this.form.start = this.getCurrentDate()
+            console.log(this.form)
+
             try {
                 const response = await useTaskStore().createTask(this.selected_project.id, this.form)
                 if (response.success) {
@@ -202,9 +187,8 @@ export default {
         },
         getCurrentDate() {
             const now = new Date();
-            const isoString = now.toISOString(); 
             
-            return isoString.replace('Z', '000000').slice(0, -3); 
+            return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}T${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}:${String(now.getSeconds()).padStart(2, '0')}`; 
         }, 
         showNotificationMessage(message, type = 'error') {
             this.notificationMessage = message

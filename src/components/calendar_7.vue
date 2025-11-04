@@ -13,6 +13,15 @@
                 <br>
                 {{ dates[index] }}
             </div>
+            <div class="container__days--task">
+                <div class="container__days--task--item" v-for="(task, task_index) in render_tasks[index]" :key="task.id" 
+                :style="getStyles(task_index, task)">
+                    <div class="container__days--task--item--line" :style="{background: task.color}"></div>
+                    <div class="container__days--task--item--descr">
+                        {{ task.title }}
+                    </div>
+                </div>
+            </div>
         </div>
         <div class="borders">
         </div>
@@ -32,6 +41,7 @@ export default {
             getDays: 7,
             days: ['Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница', 'Суббота','Воскресенье'],
             dates: [],
+            render_tasks: [[]*7],
             duration: null,
             start: null,
         }
@@ -43,6 +53,42 @@ export default {
         }
     },
     methods: {
+        getStyles(index, task){
+            return {
+                height: `${task.duration * 100}px`, 
+                left: `${10*index}px`,
+                width: `calc(100% - ${10*index}px)`,
+                // overflow: 'hidden',
+                top: `${51 + task.day_start * 100}px`
+            }
+        },
+        updateRenderTasks() {
+            this.render_tasks = Array(7).fill().map(() => []);
+            
+            for (let i = 0; i < this.tasks.length; i++) {
+                for (let dayIndex = 0; dayIndex < 7; dayIndex++) {
+                    if (this.dates[dayIndex] === this.tasks[i].date_start) {
+                        this.render_tasks[dayIndex].push(this.tasks[i]);
+                    }
+                }
+            }
+            
+            // Сортируем задачи в каждом дне по duration
+            for (let dayIndex = 0; dayIndex < 7; dayIndex++) {
+                this.render_tasks[dayIndex].sort((a, b) => b.duration - a.duration);
+            }
+        },
+        validationData() {
+            for (let i = 0; i < this.tasks.length; i++) {
+                this.tasks[i].duration = (new Date(this.tasks[i].end) - new Date(this.tasks[i].start)) / (1000 * 60 * 60);
+                this.tasks[i].date_start = new Date(this.tasks[i].start).getDate();
+                const startHours = new Date(this.tasks[i].start)
+                startHours.setHours(0,0,0,0)
+                
+                this.tasks[i].day_start = (new Date(this.tasks[i].start) - startHours) / (1000 * 60 * 60);
+                this.updateRenderTasks()
+            }
+        },
         getCurrentDate() {
             const date = new Date();
             const isoString = date.toISOString();
@@ -67,7 +113,7 @@ export default {
             let date;
             this.newDate === null ? date = new Date() : date = new Date(this.newDate);
             this.currentWeek = false;
-
+            
             switch (value) {
                 case 'next':
                     date.setDate(date.getDate() + 7);
@@ -96,11 +142,13 @@ export default {
                 weekDay.setDate(monday.getDate() + i);
                 this.dates.push(weekDay.getDate());
             }
+            this.updateRenderTasks()
         }
     },
-     
     async mounted() {
+        this.render_tasks = Array(7).fill().map(() => []);
         this.currentDate = this.getCurrentDate()
+        this.validationData()
     }
 }
 </script>

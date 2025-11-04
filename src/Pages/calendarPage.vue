@@ -1,7 +1,7 @@
 <template>
     <div class="layout">
         <Loader v-if="loading"></Loader>
-        <div class="container wrapper" v-if="!loading && tasks.length === 0">
+        <div class="container wrapper" >
             <aside class="wrapper__aside">
             
             </aside>
@@ -20,7 +20,7 @@
             @close="createModalFunc"/>
         </div>
 
-        <calendar_7 :tasks="tasks" />
+        <calendar_7 v-if="tasks.length > 0" :tasks="tasks" />
     </div>
 </template>
 
@@ -30,6 +30,7 @@ import Loader from '@/components/Loader.vue';
 import buttonComponent from '@/components/button.vue';
 import calendar_7 from '@/components/calendar_7.vue';
 import createTask from '@/modalWindows/createTask.vue';
+import { loadFromCache } from '@/cache/cache';
 
 export default {
     name: 'calendar',
@@ -73,6 +74,7 @@ export default {
      
     async mounted() {
         this.currentDate = this.getCurrentDate()
+        this.projects = loadFromCache('projects')
         await this.getTasks()   
     }
 }
