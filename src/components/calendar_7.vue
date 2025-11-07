@@ -148,6 +148,7 @@ export default {
     async mounted() {
         this.render_tasks = Array(7).fill().map(() => []);
         this.currentDate = this.getCurrentDate()
+        
         this.validationData()
     }
 }
