@@ -78,6 +78,21 @@
                     
                 </div>
                 <div class="input__group">
+                    <label for="start" class="input__group--label">Старт задачи</label>
+                    <input 
+                    id="start"
+                    v-model.trim="start.date"
+                    type="date"
+                    autocomplete="off"
+                    class="input__group--input end_date">
+                    <input 
+                    id="start"
+                    v-model.trim="start.time"
+                    type="time"
+                    autocomplete="off"
+                    class="input__group--input">
+                </div>
+                <div class="input__group">
                     <label for="end" class="input__group--label">Дедлайн задачи</label>
                     <input 
                     id="end"
@@ -142,6 +157,10 @@ export default {
                 time: '',
                 date: ''
             },
+            start: {
+                time: '',
+                date: ''
+            },
             
             showNotification: false,
             notificationMessage: '',
@@ -159,23 +178,24 @@ export default {
         },
         convertDate() {
             try {
-                const dateTimeString = `${this.deadline.date}T${this.deadline.time}:00`;
-                this.form.end = dateTimeString;
+                const dateTimeString = `${this.deadline.date}T${this.deadline.time}:00`
+                this.form.end = dateTimeString
+                const startTimeString = `${this.start.date}T${this.start.time}:00`
+                this.form.start = startTimeString
             } catch (error) {
                 console.log(error)
             }
         },
         async createTask(){
             this.convertDate()
-            this.form.start = this.getCurrentDate()
             console.log(this.form)
-
+            
             try {
                 const response = await useTaskStore().createTask(this.selected_project.id, this.form)
                 if (response.success) {
                     this.showNotificationMessage('Вы успешно создали задачу', 'success')
                     setTimeout(() => {
-                        this.$router.push(`/project/${this.selected_project.id}`)
+                        this.$emit('close')
                     }, 1500);
 
                 } else {

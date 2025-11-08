@@ -30,13 +30,17 @@
 </template>
 
 <script>
+import { useTaskStore } from '@/stores/tasks';
 export default {
     name: 'calendar_7',
     data() {
         return {
+
+            tasks: [],
             currentDate: '',
             currentWeekDay: null,
             currentWeek: true,
+            start_week: '',
             newDate: null,
             getDays: 7,
             days: ['Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница', 'Суббота','Воскресенье'],
@@ -46,48 +50,59 @@ export default {
             start: null,
         }
     },
-    props: {
-        tasks: {
-            type: Object,
-            required: true
-        }
-    },
     methods: {
         getStyles(index, task){
-            return {
-                height: `${task.duration * 100}px`, 
-                left: `${10*index}px`,
-                width: `calc(100% - ${10*index}px)`,
-                // overflow: 'hidden',
-                top: `${51 + task.day_start * 100}px`
-            }
+            if (task.date_start === task.date_end) {
+                return {
+                    height: `${task.duration * 100}px`, 
+                    left: `${10*index}px`,
+                    width: `calc(100% - ${10*index}px)`,
+                    // overflow: 'hidden',
+                    top: `${51 + task.day_start * 100}px`
+                }
+            } else {
+                return {
+                    // height: `${((24 - task.date_start) * 100)}px`, 
+                    left: `${10*index}px`,
+                    width: `calc(100% - ${10*index}px)`,
+                    // // overflow: 'hidden',
+                    // top: `${51 + task.date_start * 100}px`
+                }
+            } 
+            
         },
         updateRenderTasks() {
             this.render_tasks = Array(7).fill().map(() => []);
-            
+            console.log('dates', this.dates)
             for (let i = 0; i < this.tasks.length; i++) {
                 for (let dayIndex = 0; dayIndex < 7; dayIndex++) {
-                    if (this.dates[dayIndex] === this.tasks[i].date_start) {
+                    console.log(this.tasks[i].title, this.tasks[i].date_start, this.tasks[i].date_end, this.dates[dayIndex])
+                    if (this.tasks[i].date_start !== this.tasks[i].date_end && this.dates[dayIndex] === this.tasks[i].date_end) {
+                        this.render_tasks[dayIndex].push(this.tasks[i]);
+                    }
+                    if (this.tasks[i].date_start === this.tasks[i].date_end && this.dates[dayIndex] === this.tasks[i].date_start) {
                         this.render_tasks[dayIndex].push(this.tasks[i]);
                     }
                 }
             }
             
-            // Сортируем задачи в каждом дне по duration
             for (let dayIndex = 0; dayIndex < 7; dayIndex++) {
                 this.render_tasks[dayIndex].sort((a, b) => b.duration - a.duration);
             }
+            console.log('render_tasks', this.render_tasks);
         },
         validationData() {
             for (let i = 0; i < this.tasks.length; i++) {
                 this.tasks[i].duration = (new Date(this.tasks[i].end) - new Date(this.tasks[i].start)) / (1000 * 60 * 60);
                 this.tasks[i].date_start = new Date(this.tasks[i].start).getDate();
+                this.tasks[i].date_end = new Date(this.tasks[i].end).getDate();
                 const startHours = new Date(this.tasks[i].start)
                 startHours.setHours(0,0,0,0)
                 
                 this.tasks[i].day_start = (new Date(this.tasks[i].start) - startHours) / (1000 * 60 * 60);
-                this.updateRenderTasks()
+                
             }
+            this.updateRenderTasks()
         },
         getCurrentDate() {
             const date = new Date();
@@ -97,7 +112,7 @@ export default {
             
             const monday = new Date(date);
             monday.setDate(date.getDate() - (currentDay + 6) % 7);
-            
+            this.start_week = `${monday.getFullYear()}-${monday.getMonth()+1}-${monday.getDate() > 9 ? monday.getDate() : '0'+monday.getDate()}`
             this.dates = [];
             for (let i = 0; i < 7; i++) {
                 const weekDay = new Date(monday);
@@ -109,7 +124,7 @@ export default {
             
             return isoString.replace('Z', '000000').slice(0, -3); 
         }, 
-        changeWeek(value) {
+        async changeWeek(value) {
             let date;
             this.newDate === null ? date = new Date() : date = new Date(this.newDate);
             this.currentWeek = false;
@@ -128,10 +143,10 @@ export default {
 
             const monday = new Date(this.newDate);
             monday.setDate(monday.getDate() - (monday.getDay() + 6) % 7);
-
+            this.start_week = `${monday.getFullYear()}-${monday.getMonth()+1 > 9 ? monday.getMonth()+1 : '0' + (monday.getMonth()+1)}-${monday.getDate() > 9 ? monday.getDate() : '0' + monday.getDate()}`
             const currentMonday = new Date();
             currentMonday.setDate(currentMonday.getDate() - (currentMonday.getDay() + 6) % 7);
-
+            
             if (monday.toDateString() === currentMonday.toDateString()) {
                 this.currentWeek = true;
             }
@@ -142,14 +157,33 @@ export default {
                 weekDay.setDate(monday.getDate() + i);
                 this.dates.push(weekDay.getDate());
             }
+            
+            await this.getTasks()
             this.updateRenderTasks()
-        }
+        },
+        async getTasks() {
+            this.$emit('load')
+            try {
+                const response = await useTaskStore().byDate(this.start_week, 7)
+                if (response.success) {
+                    console.log('response.data', response.data)
+                    this.tasks = response.data.items
+                    this.validationData()
+                } else {
+                    console.log(response.error)
+                }
+            } catch (error) {
+                console.log(error)
+            } finally {
+                this.$emit('load')
+            }
+        },
     },
     async mounted() {
-        this.render_tasks = Array(7).fill().map(() => []);
         this.currentDate = this.getCurrentDate()
+        await this.getTasks()
         
-        this.validationData()
+        
     }
 }
 </script>
