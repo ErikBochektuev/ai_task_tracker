@@ -21,6 +21,23 @@ export const useTaskStore = defineStore('task', () => {
         }
     }
 
+    const getTask = async (projectID, taskID) => {
+        try {
+            const response = await taskApi.getTask(projectID, taskID)
+            saveToCache(`task_${taskID}`, response.data)
+            return { success: true, data: response.data }
+        } catch (error) {
+            const cachedData = loadFromCache(`task_${taskID}`)
+            if (cachedData) {
+                console.log('Используются кэшированные данные задачи')
+                return { success: true, data: cachedData }
+            } else {
+                const errorMessage = error.response.data.details
+                return { success: false, error: errorMessage }
+            }
+        }
+    }
+
     const createTask = async (projectID, taskData) => {
         try {
             const response = await taskApi.createTask(projectID, taskData)
@@ -63,6 +80,7 @@ export const useTaskStore = defineStore('task', () => {
 
     return {
         getTasks,
+        getTask,
         createTask,
         updateTask,
         deleteTask,

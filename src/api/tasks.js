@@ -12,6 +12,7 @@ const api = axios.create({
 
 export const taskApi = {
     getTasks: (projectID) => api.get(`/projects/${projectID}/tasks`),
+    getTask: (projectID, taskID) => api.get(`/projects/${projectID}/tasks/${taskID}`),
     createTask: (projectID, taskData) => api.post(`/projects/${projectID}/tasks`, taskData),
     updateTask: (projectID, taskID, taskData) => api.patch(`/projects/${projectID}/tasks/${taskID}`, taskData),
     deleteTask: (projectID, taskID) => api.delete(`/projects/${projectID}/tasks/${taskID}`),

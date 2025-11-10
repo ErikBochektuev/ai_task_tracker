@@ -30,7 +30,7 @@
             </div>
         </div>
 
-        <calendar_7 @load="loader()"/>
+        <calendar_7 @load="loader()" @select="selectTask"/>
         <createTask 
         v-if="create"
         :projects="projects"
@@ -38,13 +38,18 @@
         <createProject 
         v-if="createProject"
         @close="closeModal"/>
+
+        <taskInfo 
+        :taskID="selectedTask.id" 
+        :projectID="selectedTask.project_id"
+        v-if="selected === true" 
+        @close="selected = false"/>
     </div>
 </template>
 
 <script>
-import { useTaskStore } from '@/stores/tasks';
 import Loader from '@/components/Loader.vue';
-import buttonComponent from '@/components/button.vue';
+import taskInfo from '@/modalWindows/taskInfo.vue';
 import calendar_7 from '@/components/calendar_7.vue';
 import createTask from '@/modalWindows/createTask.vue';
 import createProject from '@/modalWindows/createProject.vue';
@@ -52,11 +57,12 @@ import { loadFromCache } from '@/cache/cache';
 
 export default {
     name: 'calendar',
-    components: { Loader, buttonComponent, calendar_7, createTask, createProject },
+    components: { Loader, taskInfo, calendar_7, createTask, createProject },
     data() {
         return {
-            currentDate: '',
-            currentWeekDay: null,
+            selectedTask: {},
+            selected: false,
+
 
             create: false,
             createProject: false,
@@ -66,6 +72,10 @@ export default {
         }
     },
     methods: {
+        selectTask(task) {
+            this.selectedTask = task
+            this.selected = true
+        },
         loader() {
             this.loading = !this.loading
         },

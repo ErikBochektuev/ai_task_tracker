@@ -10,6 +10,7 @@
 @import './modal/projectSettings.sass';
 @import './modal/addCategory.sass';
 @import './modal/createTask.sass';
+@import './modal/taskInfo.sass';
 
 @import './components/taskCard.sass';
 @import './components/projectCard.sass';

@@ -15,7 +15,7 @@
             </div>
             <div class="container__days--task">
                 <div class="container__days--task--item" v-for="(task, task_index) in render_tasks[index]" :key="task.id" 
-                :style="getStyles(task_index, task)">
+                :style="getStyles(task_index, task)" @click="$emit('select', task)">
                     <div class="container__days--task--item--line" :style="{background: task.color}"></div>
                     <div class="container__days--task--item--descr">
                         {{ task.title }}
