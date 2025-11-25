@@ -242,6 +242,7 @@ export default {
           this.$router.push('/categories')
         }
       } catch (error) {
+        console.log(error)
         this.$router.push('/categories')
       }
     },

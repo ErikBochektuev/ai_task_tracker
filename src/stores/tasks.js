@@ -32,7 +32,7 @@ export const useTaskStore = defineStore('task', () => {
                 console.log('Используются кэшированные данные задачи')
                 return { success: true, data: cachedData }
             } else {
-                const errorMessage = error.response.data.details
+                const errorMessage = error
                 return { success: false, error: errorMessage }
             }
         }

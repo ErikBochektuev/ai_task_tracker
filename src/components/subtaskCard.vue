@@ -22,7 +22,7 @@
           class="input__group--input"
         />
       </div>
-      <div class="subtask-actions" v-if="!creating">
+      <div class="subtask-actions" v-if="!creating && !subtask.completed">
         <img src="../assets/icons/pen.svg" alt="update" class="icon" @click="creating = true" />
         <img src="../assets/icons/delete.svg" alt="delete" class="icon" @click="deleteSubtask()" />
       </div><div class="subtask-actions" v-if="creating">
@@ -118,53 +118,5 @@ export default {
 </script>
 
 <style>
-.subtask-item {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 10px;
-  border-bottom: 1px solid #e6e9ef;
-}
 
-.subtask-content {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.subtask-checkbox {
-  cursor: pointer;
-}
-
-.subtask-title {
-  font-size: 1rem;
-  color: #333;
-  cursor: pointer;
-  margin: 15.6px 18px;
-}
-
-.subtask-completed {
-  text-decoration: line-through;
-  color: #999;
-}
-
-.subtask-actions {
-  display: flex;
-  gap: 20px;
-}
-
-.new-subtask {
-    padding-left: 23px;
-}
-
-.icon {
-    width: 24px;
-    height: 24px;
-    cursor: pointer;
-    transition: transform 0.2s ease-in-out;
-}
-
-.icon:hover {
-    transform: scale(1.3);
-}
 </style>

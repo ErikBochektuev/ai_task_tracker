@@ -52,6 +52,19 @@
         &--item:hover 
             transform: scale(1.05)
             z-index: 50
+    &--time 
+        position: relative
+        width: 100%
+        display: flex
+        align-items: center
+        height: 2px
+        background: #000
+        &--dot 
+            left: 0
+            width: 10px
+            height: 10px
+            border-radius: 50%
+            background: #000
 
 
 
@@ -66,6 +79,7 @@
 
 .create_module
     position: fixed
+    z-index: 2
     bottom: 100px
     right: 100px
     width: 75px
@@ -97,6 +111,7 @@
 .create_module:hover .create_project
     opacity: 1
     transform: translateX(-100px)
+
 .create_module:hover .create_task
     opacity: 1
     transform: translateY(-100px)

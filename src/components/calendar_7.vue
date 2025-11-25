@@ -13,6 +13,9 @@
                 <br>
                 {{ dates[index] }}
             </div>
+            <div class="container__days--time" v-if="index === currentWeekDay && currentWeek === true" :style="{ top: `${currentTime}px` }">
+                <div class="container__days--time--dot"></div>
+            </div>
             <div class="container__days--task">
                 <div class="container__days--task--item" v-for="(task, task_index) in render_tasks[index]" :key="task.id" 
                 :style="getStyles(task_index, task)" @click="$emit('select', task)">
@@ -40,6 +43,7 @@ export default {
             currentDate: '',
             currentWeekDay: null,
             currentWeek: true,
+            currentTime: null,
             start_week: '',
             newDate: null,
             getDays: 7,
@@ -103,6 +107,19 @@ export default {
                 
             }
             this.updateRenderTasks()
+        },
+        getCurrentTime() {
+            const time = new Date()
+            const hours = time.getHours()
+            const minutes = time.getMinutes()
+            this.currentTime = hours * 100 + minutes * 5 / 3
+            console.log(this.currentTime)
+        },
+
+        startUpdating() {
+            setInterval(() => {
+                this.getCurrentTime()
+            }, 300000)
         },
         getCurrentDate() {
             const date = new Date();
@@ -182,8 +199,8 @@ export default {
     async mounted() {
         this.currentDate = this.getCurrentDate()
         await this.getTasks()
-        
-        
+        this.getCurrentTime()
+        this.startUpdating()
     }
 }
 </script>

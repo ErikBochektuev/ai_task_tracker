@@ -41,6 +41,9 @@
                         </div>
                     </li>
                 </ul>
+
+                <comment :projectID="projectID" :taskID="taskID" />
+
                 <div class="button__group">
                     <buttonComponent 
                     class="close"
@@ -48,6 +51,8 @@
                     :text="'Закрыть'"
                     />
                 </div>
+
+
             </div>
         </transition>
     </div>
@@ -56,13 +61,14 @@
 <script>
 import buttonComponent from '@/components/button.vue';
 import subtaskCard from '@/components/subtaskCard.vue';
+import comment from '@/components/comment.vue';
 import { useSubtaskStore } from '@/stores/subtask';
 import { useTagStore } from '@/stores/tags';
 import { useTaskStore } from '@/stores/tasks';
 
 export default {
     name: 'taskInfo',
-    components: { buttonComponent, subtaskCard },
+    components: { buttonComponent, subtaskCard, comment },
     props: {
         taskID: {
             type: Number,

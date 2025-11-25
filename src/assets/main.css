@@ -15,6 +15,7 @@
 @import './components/taskCard.sass';
 @import './components/projectCard.sass';
 @import './components/header.sass';
+@import './components/subtaskCard.sass';
 
 
 @import './components/buttonComponent.sass';

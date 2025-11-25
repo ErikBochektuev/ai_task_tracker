@@ -2,3 +2,7 @@
     width: 24px;
     height: 24px;
 }
+
+.icon:hover {
+    transform: scale(1.3);
+}
